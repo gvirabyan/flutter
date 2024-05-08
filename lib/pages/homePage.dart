@@ -5,31 +5,43 @@ import 'package:test_app_1/pages/detailsPage.dart';
 import 'package:http/http.dart' as http;
 
 import '../model/character.dart';
+import 'package:test_app_1/model/location.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   static List<Character> characters = [];
-
-
+  static Location? location;
 
   Future getCharacters() async {
     var response =
         await http.get(Uri.parse('https://rickandmortyapi.com/api/character'));
     var jsonData = jsonDecode(response.body);
-    //print(jsonData['results']);
 
     for (var eachCharacter in jsonData['results']) {
+      final location = eachCharacter['location']['url'];
+      final originLocation = eachCharacter['origin']['name'];
+
       final character = Character(
           name: eachCharacter['name'],
           status: eachCharacter['status'],
-          location: ' ',
-          dimension: ' ',
           img: eachCharacter['image'],
-          type: eachCharacter['type']);
+          originLocation: originLocation,
+          location: location);
       characters.add(character);
-      //print(jsonData['location']);
+
+      //print(character.location);
     }
+  }
+
+  Future getCharacterDetails(int x) async {
+    var response = await http.get(Uri.parse(characters[x].location));
+    var jsonData = jsonDecode(response.body);
+
+    HomePage.location = Location(
+        locationName: jsonData['name'],
+        type: jsonData['type'],
+        dimension: jsonData['dimension']);
   }
 
   @override
@@ -58,11 +70,13 @@ class HomePage extends StatelessWidget {
                           ),
                           child: ListTile(
                             onTap: () {
+                              //getCharacterDetails(index);
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => DetailsPage(
                                             character: characters[index],
+                                            location: location ?? Location(locationName: 'Unknown', type: 'Unknown', dimension: 'Unknown'),
                                           )));
                             },
                             title: Text('Name: ${characters[index].name}'),

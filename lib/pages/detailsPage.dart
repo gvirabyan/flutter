@@ -1,12 +1,13 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:test_app_1/model/character.dart';
+import 'package:test_app_1/model/location.dart';
 
 class DetailsPage extends StatelessWidget {
   final Character character;
+  final Location? location;
 
-  const DetailsPage({super.key, required this.character});
+  const DetailsPage(
+      {super.key, required this.character,  this.location});
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +41,14 @@ class DetailsPage extends StatelessWidget {
               'Origin',
               style: CustomTextStyle.BoldUnderline,
             ),
+            Text(character.originLocation),
             const Text(
               'Location',
               style: CustomTextStyle.BoldUnderline,
             ),
-            Text('location: ${character.location}'),
-            Text('dimension: ${character.dimension}'),
-            Text('type: ${character.type}')
+            Text('location:${location?.locationName}'),
+            Text('dimension: ${location?.dimension}'),
+            Text('type:${location?.type}')
           ],
         ),
       ),
